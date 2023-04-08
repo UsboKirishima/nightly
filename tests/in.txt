@@ -1,0 +1,11 @@
+;FFMETADATA1
+title=Time Flies | HiphopKit.com
+artist=Drake
+album_artist=Drake
+TOPE=Drake
+album=Dark Lane Demo Tapes
+track=7
+genre=Hip hop
+comment=Exclusive @ HipHopKit.com
+date=2020
+encoder=Lavf60.3.100

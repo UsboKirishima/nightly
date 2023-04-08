@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+
+VERSION="1.0.0"
+
+#COLOURS
+cyan='\e[0;36m'
+green='\e[0;34m'
+okegreen='\033[92m'
+lightgreen='\e[1;32m'
+white='\e[1;37m'
+red='\e[1;31m'
+yellow='\e[0;33m'
+blue='\e[1;34m' 
+reset="\033[00m"
+orange='\e[38;5;166m'
+    
+OPTS_ARG=$2
+AUDIO_FILE_INPUT=$2
+
+function banner() {
+echo -e "        _______"
+echo -e "      .'_/_|_\_'."
+echo -e "      \\\`\  |  /\`/"
+echo -e "       \`\\\\\ | //'"
+echo -e "         \`\|/\`"
+echo -e "           \`"
+echo -e "        NIGHTLY"
+        
+    
+    echo -e "  ━━━━━━━${yellow}${VERSION}${blue}━━━━━━━${reset}"
+}
+	    
+function help() {
+    cat <<-EndHelp
+Usage: 
+  
+  $0 [option]
+  $0 [option] [arguments] ...
+  
+Options:
+  
+  help                         = Show the full list of commands avaible.
+                                 Always updated for the v${VERSION}
+  credits                      = Show who created this tool and their 
+                                 associated github profiles.
+  version                      = Show the current version of the tool 
+                                 and the latest version avaible.
+  play                         = Play and listen an audio track.
+EndHelp
+}
+	    
+function send_notify_song_playing() {
+    if [ -f "/tmp/cover_nightly.jpg" ] 
+    then
+        rm /tmp/cover_nightly.jpg
+    fi
+    # grep "Static hostname" | awk '{print $3}'
+    ARTIST=$(ffprobe $AUDIO_FILE_INPUT 2>&1 | grep "artist          :" | cut -f 2 -d ":" | sed 's/^[ \t]*//' | awk 'NR==1 {print; exit}')
+    TITLE=$(ffprobe $AUDIO_FILE_INPUT 2>&1 | grep "title           :" | cut -f 2 -d ":" | sed 's/^[ \t]*//' | awk 'NR==1 {print; exit}')
+    ffmpeg -i $AUDIO_FILE_INPUT -an -c:v copy /tmp/cover_nightly.jpg
+    notify-send "$TITLE" "$ARTIST" --icon=/tmp/cover_nightly.jpg
+} 
+
+function play() {
+    if [ -z AUDIO_FILE_INPUT ] 
+    then
+        echo -e "nightly: audio file not found"
+    else
+        (ffplay $AUDIO_FILE_INPUT -autoexit -nodisp -loglevel quiet &)
+        send_notify_song_playing
+        (cava)
+    fi
+}
+	    
+if [ -z $2 ] 
+then 
+    OPTS_ARG=$1 
+else
+    OPTS_ARG=$2  
+fi
+	    
+if [ $# -eq 0 ]
+then
+    (clear)
+    (echo -e $blue)
+    banner
+else 
+    case "$1" in
+        help)
+            help
+            ;;
+        version)
+            echo -e "Nightly v${VERSION}"
+            ;;
+        credits)
+            echo -e "-> Coded with <3 by Usbo"
+            echo -e "-- ${blue}https://github.com/UsboKirishima${reset}"
+            ;;
+        play)
+            play
+            ;;
+        *)
+            echo -e nightly: command not found: $1
+            ;;
+    esac
+fi
+
+echo $2

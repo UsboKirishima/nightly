@@ -1,0 +1,17 @@
+#!/bin/sh
+
+if [ "$EUID" -ne 0 ]
+  then echo -e "${RED}Please run the setup as root${RESET}"
+  exit
+fi
+
+
+#install Cava
+(git clone https://github.com/karlstav/cava /tmp/Cava)
+(cd /tmp/Cava)
+(make install)
+
+#install ffmpeg
+(git clone https://github.com/FFmpeg/FFmpeg /tmp/ffmpeg)
+(cd /tmp/ffmpeg)
+(make install)
